@@ -174,6 +174,7 @@ class editionCtrl extends jController {
       return false;
     }
 
+    $layer = $lproj->getLayer( $layerId );
     $layerXml = $lproj->getXmlLayer( $layerId );
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
@@ -196,7 +197,7 @@ class editionCtrl extends jController {
 
     // Check if user groups intersects groups allowed by project editor
     // If user is admin, no need to check for given groups
-    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') ){
+    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') and $eLayer->acl){
         // Check if configured groups white list and authenticated user groups list intersects
         $editionGroups = $eLayer->acl;
         $editionGroups = array_map('trim', explode(',', $editionGroups));
@@ -222,6 +223,7 @@ class editionCtrl extends jController {
     $this->layerId = $layerId;
     $this->featureId = $featureId;
     $this->featureIdParam = $featureIdParam;
+    $this->layer = $layer;
     $this->layerXml = $layerXml;
     $this->layerName = $layerName;
 
@@ -253,7 +255,11 @@ class editionCtrl extends jController {
         $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
         $wfsresponse = $wfsrequest->getfeature();
         if( property_exists($wfsresponse, 'data') ){
-            $this->featureData = json_decode($wfsresponse->data);
+            $data = $wfsresponse->data;
+            if( property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data) ){
+                $data = jFile::read($data);
+            }
+            $this->featureData = json_decode($data);
             if( empty($this->featureData) ){
                 $this->featureData = Null;
             }
@@ -293,7 +299,7 @@ class editionCtrl extends jController {
 
         // Check if a user is authenticated
         $isConnected = jAuth::isConnected();
-        $cnx = jDb::getConnection();
+        $cnx = jDb::getConnection($this->layerId);
         if($isConnected){
           $user = jAuth::getUserSession();
           $login = $user->login;
@@ -311,7 +317,7 @@ class editionCtrl extends jController {
         }
         // Set filter when multiple layers concerned
         if($where){
-          $this->loginFilteredLayers = array(
+          return array(
             'where' => $where,
             'type' => $type,
             'attribute' => $attribute
@@ -319,6 +325,7 @@ class editionCtrl extends jController {
         }
       }
     }
+    return null;
   }
 
   /**
@@ -399,8 +406,14 @@ class editionCtrl extends jController {
     $tools = $cnx->tools();
     $sequence = null;
 
-    $fields = $tools->getFieldList($tableAlone, $sequence);
-    $this->dataFields = $fields;
+    $fields = $tools->getFieldList($tableAlone, $sequence, $schema);
+    $wfsFields = $this->layer->getWfsFields();
+
+    $this->dataFields = array();
+    foreach($fields as $fieldName=>$prop){
+        if( in_array($fieldName, $wfsFields) || in_array( strtolower($prop->type), $this->geometryDatatypeMap ) )
+            $this->dataFields[$fieldName] = $prop;
+    }
 
     foreach($this->dataFields as $fieldName=>$prop){
       // Detect primary key column
@@ -560,7 +573,7 @@ class editionCtrl extends jController {
   */
   private function updateFormByLogin($form, $save) {
     if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
-        $this->filterDataByLogin($this->layerName);
+        $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
 
     if ( is_array($this->loginFilteredLayers) ) {
         $type = $this->loginFilteredLayers['type'];
@@ -661,13 +674,28 @@ class editionCtrl extends jController {
   */
   private function fillControlFromValueRelationLayer($fieldName){
 
+    $wfsData = null;
+    $mime = '';
+
     // Build WFS request parameters
     //   Get layername via id
     $relationLayerId = $this->formControls[$fieldName]->valueRelationData['layer'];
-    $_relationayerXml = $this->project->getXmlLayer($relationLayerId);
-    $relationayerXml = $_relationayerXml[0];
-    $_layerName = $relationayerXml->xpath('layername');
+
+    $_relationLayerXml = $this->project->getXmlLayer($relationLayerId);
+    if(count($_relationLayerXml) == 0){
+        $this->formControls[$fieldName]->ctrl->hint = 'Control not well configured!';
+        $this->formControls[$fieldName]->ctrl->help = 'Control not well configured!';
+        return;
+    }
+    $relationLayerXml = $_relationLayerXml[0];
+
+    $_layerName = $relationLayerXml->xpath('layername');
+    if(count($_layerName) == 0){
+        $this->formControls[$fieldName]->ctrl->hint = 'Control not well configured!';
+        $this->formControls[$fieldName]->ctrl->help = 'Control not well configured!';
+    }
     $layerName = (string)$_layerName[0];
+
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
     $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
@@ -680,7 +708,7 @@ class editionCtrl extends jController {
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
       'GEOMETRYNAME' => 'none',
-      'map' => $this->repository->getPath().$this->project->getKey().".qgs"
+      //'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
     // add EXP_FILTER. Only for QGIS >=2.0
     $expFilter = Null;
@@ -689,12 +717,12 @@ class editionCtrl extends jController {
     }
     // Filter by login
     if( !$this->loginFilteredOveride ) {
-      $this->filterDataByLogin($layerName);
-      if( is_array( $this->loginFilteredLayers )){
+      $loginFilteredLayers = $this->filterDataByLogin($layerName);
+      if( is_array( $loginFilteredLayers )){
         if($expFilter){
-          $expFilter = " ( ".$expFilter." ) AND ( ".$this->loginFilteredLayers['where']." ) ";
+          $expFilter = " ( ".$expFilter." ) AND ( ".$loginFilteredLayers['where']." ) ";
         }else {
-          $expFilter = $this->loginFilteredLayers['where'];
+          $expFilter = $loginFilteredLayers['where'];
         }
       }
     }
@@ -705,21 +733,31 @@ class editionCtrl extends jController {
     }
 
     // Build query
-    $lizmapServices = lizmap::getServices();
-    $url = $lizmapServices->wmsServerURL.'?';
-    $bparams = http_build_query($params);
-    $querystring = $url . $bparams;
+    //$lizmapServices = lizmap::getServices();
+    //$url = $lizmapServices->wmsServerURL.'?';
+    //$bparams = http_build_query($params);
+    //$querystring = $url . $bparams;
 
     // Get remote data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $getRemoteData = $lizmapCache->getRemoteData(
-      $querystring,
-      $lizmapServices->proxyMethod,
-      $lizmapServices->debugMode
-    );
-    $wfsData = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    //$lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    //$getRemoteData = $lizmapCache->getRemoteData(
+      //$querystring,
+      //$lizmapServices->proxyMethod,
+      //$lizmapServices->debugMode
+    //);
+    //$wfsData = $getRemoteData[0];
+    //$mime = $getRemoteData[1];
 
+    $wfsrequest = new lizmapWFSRequest( $this->project, $params );
+    $wfsresponse = $wfsrequest->getfeature();
+    $wfsData = Null;
+    if( property_exists($wfsresponse, 'data') ){
+        $wfsData = $wfsresponse->data;
+        if( property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($wfsData) ){
+            $wfsData = jFile::read($wfsData);
+        }
+    }
+    $mime = $wfsresponse->mime;
     if($wfsData and !in_array(strtolower($mime), array('text/html', 'text/xml')) ){
       $wfsData = json_decode($wfsData);
       // Get data from layer
@@ -761,11 +799,11 @@ class editionCtrl extends jController {
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
-        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control !';
-        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control!';
+        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control!';
       }else{
-        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control !';
-        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control!';
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control!';
       }
     }
   }
@@ -855,6 +893,7 @@ class editionCtrl extends jController {
             if ($ctrl && $ctrl->type == 'choice' ) {
                 $path = explode( '/', $record->$ref );
                 $filename = array_pop($path);
+                $filename = preg_replace('#_|-#', ' ', $filename);
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
@@ -1047,7 +1086,7 @@ class editionCtrl extends jController {
 
       // Add login filter if needed
       if( !$this->loginFilteredOveride ) {
-        $this->filterDataByLogin($this->layerName);
+        $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
         if( is_array( $this->loginFilteredLayers ) ){
           $sql.= ' AND '.$this->loginFilteredLayers['where'];
         }
@@ -1190,7 +1229,6 @@ class editionCtrl extends jController {
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
-
     // Set lizmap form controls (hard-coded in the form xml file)
     $form->setData('liz_repository', $this->repository->getKey());
     $form->setData('liz_project', $this->project->getKey());
@@ -1347,10 +1385,24 @@ class editionCtrl extends jController {
       return $rep;
     }
 
+
+    $pks = array();
+    foreach(array_keys($form->getControls()) as $ctrl) {
+      $d = $form->getData($ctrl);
+      if(in_array($ctrl->ref, $this->primaryKeys)){
+        $pks[] = $d;
+      }
+    }
+
     // Log
+    $content = "table=".$this->tableName;
+    if( !empty($this->featureId) )
+      $content.", id=".$this->featureId;
+    if( count($pk)>0 )
+      $content.= ", pk=" . implode(',', $pks);
     $eventParams = array(
       'key' => 'editionSaveFeature',
-      'content' => "table=".$this->tableName.", id=".$this->featureId,
+      'content' => $content,
       'repository' => $this->repository->getKey(),
       'project' => $this->project->getKey()
     );
@@ -1438,6 +1490,25 @@ class editionCtrl extends jController {
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
 
+    // Create form instance to get uploads file
+    $form = jForms::create('view~edition', $featureId);
+    $deleteFiles = array();
+    if( $form  and $this->addFormControls($form) ) {
+        // SELECT data from the database and set the form data accordingly
+        $this->setFormDataFromDefault($form);
+        if( $this->featureId )
+          $this->setFormDataFromFields($form);
+        if ( $form->hasUpload() ) {
+            foreach( $form->getUploads() as $upload ) {
+                $choiceRef = $upload->ref.'_choice';
+                $value = $form->getData( $upload->ref );
+                $hiddenValue = $form->getData( $upload->ref.'_hidden' );
+                $repPath = $this->repository->getPath();
+                if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                    $deleteFiles[] = realPath( $repPath ).'/'.$hiddenValue;
+            }
+        }
+    }
 
     // SQL for deleting on line in the edition table
     $sql = " DELETE FROM ".$this->table;
@@ -1445,8 +1516,10 @@ class editionCtrl extends jController {
     // Add where clause with primary keys
     $sqlw = array();
     $feature = $this->featureData->features[0];
+    $pks = array();
     foreach($this->primaryKeys as $key){
       $val = $feature->properties->$key;
+      $pks[] = $val;
       if( $this->dataFields[$key]->unifiedType != 'integer' )
         $val = $cnx->quote($val);
       $sqlw[] = '"' . $key . '"' . ' = ' . $val;
@@ -1456,7 +1529,7 @@ class editionCtrl extends jController {
 
     // Add login filter if needed
     if( !$this->loginFilteredOveride ) {
-      $this->filterDataByLogin($this->layerName);
+      $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
       if( is_array( $this->loginFilteredLayers ) ){
         $sql.= ' AND '.$this->loginFilteredLayers['where'];
       }
@@ -1467,18 +1540,27 @@ class editionCtrl extends jController {
       jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
 
       // Log
+      $content = "table=" . $this->tableName;
+      $content.= ", id=" . $this->featureId;
+      if( count($pks)>0 )
+        $content.= ", pk=" . implode(',', $pks);
       $eventParams = array(
         'key' => 'editionDeleteFeature',
-        'content' => "table=".$this->tableName.", id=".$this->featureId,
+        'content' => $content,
         'repository' => $this->repository->getKey(),
         'project' => $this->project->getKey()
       );
       jEvent::notify('LizLogItem', $eventParams);
 
+      foreach( $deleteFiles as $path ) {
+          if ( file_exists( $path ) )
+            unlink( $path );
+      }
+
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
-      jMessage::add( jLocale::get('view~edition.message.success.delete'), 'error');
+      jMessage::add( jLocale::get('view~edition.message.error.delete'), 'error');
     }
     return $this->serviceAnswer();
   }
@@ -1603,6 +1685,7 @@ class editionCtrl extends jController {
         $s_provider = $layerXmlZero->xpath('provider');
         $this->provider = (string)$s_provider[0];
         $this->layerId = $pivotId;
+        $this->layer = $lproj->getLayer( $pivotId );
         $this->layerName = $layerNamePivot;
         $this->getDataFields($datasource);
 
@@ -1783,7 +1866,7 @@ class editionCtrl extends jController {
         $msg = false;
 
         $val = (int) $pkeyval;
-        if( $this->dataFields[$key2]->unifiedType != 'integer' )
+        if( $this->dataFields[$pkey]->unifiedType != 'integer' )
             $val = $cnx->quote( $val );
         $sql = ' UPDATE '.$this->table;
         $sql.= ' SET "' . $fkey . '" = NULL';

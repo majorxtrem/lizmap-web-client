@@ -18,8 +18,6 @@
 
 <div id="content">
 
-  <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
-
   <div id="mapmenu" style="">
     {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable, 'bottomdockable'=>$bottomdockable, 'rightdockable'=>$rightdockable)}
   </div>
@@ -88,17 +86,30 @@
 
     <div id="message" class="span6">{jmessage_bootstrap}</div>
 
+
+    <div id="lizmap-search">
+
+      <div id="lizmap-search-close">
+        <button class="btn btn-mini btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
+      </div>
+
+      <div>
+        <ul class="items"></ul>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
   <p>
-    {image $j_themepath.'css/img/loading.gif'}
   </p>
 </div>
 
 <div id="lizmap-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
 </div>
+
 
 {if $googleAnalyticsID && $googleAnalyticsID != ''}
 <!-- Google Analytics -->

@@ -71,6 +71,26 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             }
         }
 
+        //INSERT MaxWidth and MaxHeight
+        if ( !preg_match( '@Service>.*?MaxWidth.*?</Service@si', $data) ) {
+            $matches = array();
+            if( preg_match( '@Service>(.*?)</Service@si', $data, $matches) ) {
+                if ( count( $matches ) > 1 ) {
+                    $sUpdate = $matches[1]."<MaxWidth>3000</MaxWidth>\n ";
+                    $data = str_replace($matches[1], $sUpdate, $data);
+                }
+            }
+        }
+        if ( !preg_match( '@Service>.*?MaxHeight.*?</Service@si', $data) ) {
+            $matches = array();
+            if( preg_match( '@Service>(.*?)</Service@si', $data, $matches) ) {
+                if ( count( $matches ) > 1 ) {
+                    $sUpdate = $matches[1]."<MaxHeight>3000</MaxHeight>\n ";
+                    $data = str_replace($matches[1], $sUpdate, $data);
+                }
+            }
+        }
+
         return (object) array(
             'code' => 200,
             'mime' => $result->mime,
@@ -80,6 +100,11 @@ class lizmapWMSRequest extends lizmapOGCRequest {
     }
 
     protected function getmap ( ) {
+        if( !$this->checkMaximumWidthHeight() ) {
+            jMessage::add('The requested map size is too large', 'Size error');
+            return $this->serviceException();
+        }
+
         $getMap = lizmapProxy::getMap($this->project, $this->params, $this->forceRequest);
 
         return (object) array(
@@ -90,6 +115,23 @@ class lizmapWMSRequest extends lizmapOGCRequest {
         );
     }
 
+    protected function checkMaximumWidthHeight ( ) {
+        $maxWidth = $this->project->getData('wmsMaxWidth');
+        if( !$maxWidth )
+            $maxWidth = $this->services->wmsMaxWidth;
+        if( !$maxWidth )
+            $maxWidth = 3000;
+        if( $this->params['width'] > $maxWidth )
+            return false;
+        $maxHeight = $this->project->getData('wmsMaxHeight');
+        if( !$maxHeight )
+            $maxHeight = $this->services->wmsMaxHeight;
+        if( !$maxHeight )
+            $maxHeight = 3000;
+        if( $this->params['height'] > $maxHeight )
+            return false;
+        return true;
+    }
 
     protected function getlegendgraphic ( ) {
         return $this->getlegendgraphics();
@@ -97,8 +139,10 @@ class lizmapWMSRequest extends lizmapOGCRequest {
 
     protected function getlegendgraphics ( ) {
         $layers = $this->param('Layers','');
+        if( $layers == '' )
+            $layers = $this->param('Layer','');
         $layers = explode(',', $layers);
-        if ( count($layers == 1) ) {
+        if ( count($layers) == 1 ) {
             $lName = $layers[0];
             $layer = $this->project->findLayerByAnyName( $lName );
             if ( $layer && property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True') {

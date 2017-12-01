@@ -1,4 +1,4 @@
-<div style="width:30px; height:30px; position:relative;">
+<div style="">
     <ul class="nav nav-list">
       {assign $onlyMaps=False}
       {foreach $dockable as $dock}
@@ -39,7 +39,7 @@
       {/foreach}
 
       {foreach $rightdockable as $dock}
-      <li class="{$dock->id} nav-bottomdock {$dock->menuIconClasses}">
+      <li class="{$dock->id} nav-right-dock {$dock->menuIconClasses}">
         <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}" data-container="#content">
           {$dock->icon}
         </a>

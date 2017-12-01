@@ -9,7 +9,7 @@
   <div class="menu-content">
     <table>
       <tr>
-        <th>{@view~map.selectiontool.toolbar.layer@}</th>
+        <td>{@view~map.selectiontool.toolbar.layer@}</td>
       </tr>
       <tr>
         <td>
@@ -63,6 +63,18 @@
                 <button id="selectiontool-filter" class="btn btn-mini disabled" title="" data-original-title="{@view~map.selectiontool.toolbar.action.filter@}">
                     <i class="icon-filter"></i>
                 </button>
+                {if $layerExport}
+                <div class="btn-group dropup" role="group" >
+                    <button id="selectiontool-export" type="button" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
+                        {@view~map.switcher.layer.export.title@}
+                      <span class="caret"></span>
+                    </button>
+                    <ul id="selectiontool-export-formats" class="dropdown-menu dropdown-menu-right" role="menu">
+                        <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
+                        <li><a href="#" class="btn-export-selection">GML</a></li>
+                    </ul>
+                </div>
+                {/if}
             </div>
         </td>
       </tr>

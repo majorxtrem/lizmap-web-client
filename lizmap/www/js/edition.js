@@ -19,6 +19,82 @@ var lizEdition = function() {
     // Edition type : createFeature or modifyFeature
     var editionType = null;
 
+    // Redraw layers
+    function redrawLayers( layerId ) {
+        var willBeRedrawnLayerIds = [layerId];
+
+        //check relations
+        if( 'relations' in config ) {
+            for( var rx in config.relations ){
+                // get children layer ids
+                if( rx == layerId ) {
+                    var layerRelations = config.relations[layerId];
+                    for( var lid in layerRelations ) {
+                        var relation = layerRelations[lid];
+                        if ( $.inArray( relation.referencingLayer, willBeRedrawnLayerIds ) != -1 )
+                            continue;
+                        willBeRedrawnLayerIds.push( relation.referencingLayer );
+                    }
+                }
+                // get pivot linked layer ids
+                else if( rx == 'pivot' && layerId in config.relations.pivot) {
+                    var pivotLayers = config.relations.pivot[layerId];
+                    for( var pId in pivotLayers ) {
+                        if ( $.inArray( pId, willBeRedrawnLayerIds ) != -1 )
+                            continue;
+                        willBeRedrawnLayerIds.push( pId );
+                    }
+                }
+                // get parent layer id
+                else {
+                    if ( $.inArray( rx, willBeRedrawnLayerIds ) != -1 )
+                        continue;
+                    var layerRelations = config.relations[rx];
+                    for( var lid in layerRelations ) {
+                        var relation = layerRelations[lid];
+                        if( relation.referencingLayer == layerId )
+                            willBeRedrawnLayerIds.push( rx );
+                    }
+                }
+            }
+        }
+
+        // Effectivly redraw layers
+        var redrawnLayerIds = [];
+        while( willBeRedrawnLayerIds.length > 0 ) {
+            var lid = willBeRedrawnLayerIds.shift();
+            var childLayerConfig = lizMap.getLayerConfigById(
+                lid,
+                config.layers,
+                'id'
+            );
+
+            // if no config
+            if( !childLayerConfig )
+                continue;
+
+            var qgisName = childLayerConfig[0];
+            var childLayerConfig = childLayerConfig[1];
+
+            if( !('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none' )
+                continue;
+
+            var olLayer = map.getLayersByName( qgisName );
+            if( olLayer.length == 0 )
+                olLayer = map.getLayersByName( lizMap.cleanName( qgisName ) );
+            if( olLayer.length == 0 )
+                continue;
+
+            olLayer = olLayer[0];
+            if( !olLayer.getVisibility() )
+                continue;
+
+            redrawnLayerIds.push(childLayerConfig.id);
+            olLayer.redraw(true);
+        }
+        return redrawnLayerIds;
+    }
+    
     function getRelationInfo(parentLayerId,childLayerId){
         if( 'relations' in config && parentLayerId in config.relations) {
             var layerRelations = config.relations[parentLayerId];
@@ -61,6 +137,7 @@ var lizEdition = function() {
         // Empty and hide form and tools
         $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
+        $('#edition-waiter').hide();
 
         // Display create tools back
         if( $('#edition-layer').html().trim() != '' ){
@@ -82,8 +159,9 @@ var lizEdition = function() {
 
             // fill in the combobox containing editable layers
             var hasCreateLayers = false;
+            var elconfig = {};
+            var elk = [];
             for (var alName in config.editionLayers) {
-
                 var al = config.editionLayers[alName];
                 if (
                     al.capabilities.createFeature == "False"
@@ -94,14 +172,24 @@ var lizEdition = function() {
                     delete config.editionLayers[alName];
                     continue;
                 }
+
                 if (
                     alName in config.layers
                     && al.capabilities.createFeature == "True"
                 ) {
                     hasCreateLayers = true;
                     var alConfig = config.layers[alName];
-                    $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
+                    elconfig[al.order] = {
+                       id: alConfig.id,
+                        title: alConfig.title,
+                        order: al.order
+                    };
+                    elk.push(al.order);
                 }
+            }
+            for (var i in elk.sort()) {
+                var alConfig = elconfig[elk[i]];
+                $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
             if( hasCreateLayers ){
                 $('#edition-layer').removeAttr('disabled').show();
@@ -142,12 +230,14 @@ var lizEdition = function() {
                     eventListeners: {
                         activate: function( evt ) {
                             lizMap.deactivateToolControls( evt );
+                            lizMap.controls.featureInfo.deactivate();
                         },
                         deactivate: function( evt ) {
                             for ( var c in editCtrls ) {
                                 if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
+                            lizMap.controls.featureInfo.activate();
                         }
                     }
                 }),
@@ -163,13 +253,9 @@ var lizEdition = function() {
                 if ( ctrl != 'panel' )
                     editCtrls[ctrl].events.on({
                         activate: function( evt ){
-                            console.log('activate');
-                            console.log(evt.object.layer.getVisibility());
                             evt.object.layer.setVisibility(true);
-                            console.log(evt.object.layer.getVisibility())
                         },
                         deactivate: function( evt ){
-                            console.log('deactivate');
                             evt.object.layer.setVisibility(false);
                         }
                     });
@@ -389,6 +475,8 @@ var lizEdition = function() {
      * @param featureId Feature id to edit : in null-> create feature
      */
     function getEditionForm( featureId, aCallback ){
+
+        $('#edition-waiter').show();
         $('#edition-form-container').hide();
 
         // Get edition type
@@ -503,17 +591,35 @@ var lizEdition = function() {
                 var parentInfo = editionLayer['parent'];
                 var parentFeat = parentInfo['feature'];
                 var relation = parentInfo['relation'];
-                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
-                    .val(parentFeat.properties[relation.referencedField])
-                    .attr('disabled','disabled');
-                var hiddenInput = $('<input type="hidden"></input>')
-                    .attr('id', select.attr('id')+'_hidden')
-                    .attr('name', relation.referencingField)
-                    .attr('value', parentFeat.properties[relation.referencedField]);
-                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
-                jFormsJQ.getForm($('#edition-form-container form').attr('id'))
-                    .getControl(relation.referencingField)
-                    .required=false;
+                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]');
+                if( select.length == 1 ){
+                    select.val(parentFeat.properties[relation.referencedField])
+                          .attr('disabled','disabled');
+                    var hiddenInput = $('<input type="hidden"></input>')
+                        .attr('id', select.attr('id')+'_hidden')
+                        .attr('name', relation.referencingField)
+                        .attr('value', parentFeat.properties[relation.referencedField]);
+                    $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                    jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                        .getControl(relation.referencingField)
+                        .required=false;
+                } else {
+                    var input = $('#edition-form-container form input[name="'+relation.referencingField+'"]');
+                    if( input.length == 1 && input.attr('type') != 'hidden'){
+                        input.val(parentFeat.properties[relation.referencedField])
+                              .attr('disabled','disabled');
+                        var hiddenInput = $('<input type="hidden"></input>')
+                            .attr('id', input.attr('id')+'_hidden')
+                            .attr('name', relation.referencingField)
+                            .attr('value', parentFeat.properties[relation.referencedField]);
+                        $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                        jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                            .getControl(relation.referencingField)
+                            .required=false;
+                    }
+                    else
+                        input.val(parentFeat.properties[relation.referencedField]);
+                }
             }
 
             handleEditionFormSubmit( form );
@@ -538,26 +644,8 @@ var lizEdition = function() {
                 { 'layerId': layerId}
             );
 
-            // Redraw layer
-            if( editionLayer['spatial'] ){
-                $.each(lizMap.layers, function(i, l) {
-                    var qgisName = lizMap.getNameByCleanName(l.name);
-                    var layerConfig = null;
-                    if ( qgisName )
-                        layerConfig = config.layers[qgisName];
-                    if ( !layerConfig )
-                        layerConfig = config.layers[l.params['LAYERS']];
-                    if ( !layerConfig )
-                        layerConfig = config.layers[l.name];
-                    if ( !layerConfig )
-                        return true;
-                    if (layerConfig.id != layerId)
-                        return true;
-                    l.redraw(true);
-                    return false;
-                });
-            }
-
+            // Redraw layers
+            redrawLayers( layerId );
             // Deactivate edition
             finishEdition();
 
@@ -569,7 +657,7 @@ var lizEdition = function() {
         // Change form layout (from QGIS drag&drop form layout mode )
         var formId = $('#edition-form-container form').attr('id');
         // lizmapEditionFormLayoutJson is a global variable added through template
-        if( lizmapEditionFormLayoutJson && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
+        if( typeof lizmapEditionFormLayoutJson !== 'undefined' && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
             var attributeTree = [];
             var item = buildFormLayoutObj( attributeTree, lizmapEditionFormLayoutJson, 0, null );
             $('#edition-form-tabbable').prependTo( $('form#'+formId) );
@@ -582,6 +670,7 @@ var lizEdition = function() {
 
 
         $('#edition-form-container').show();
+        $('#edition-waiter').hide();
 
         // Show the dock if needed
         var btn = $('#button-edition');
@@ -643,6 +732,7 @@ var lizEdition = function() {
                 fileInputs = fileInputs.filter( function( i, e ) {
                     return $(e).val() != "";
                 });
+                $('#edition-waiter').show();
                 if ( fileInputs.length != 0 ) {
                     form.fileupload({
                         dataType: 'html',
@@ -650,13 +740,13 @@ var lizEdition = function() {
                             displayEditionForm( data.result );
                         }
                     });
-                    form.fileupload('add', {fileInput:fileInputs});
+                    form.fileupload('send', {fileInput:fileInputs});
                 } else
-                $.post(form.attr('action'),
-                    form.serialize(),
-                    function(data) {
-                        displayEditionForm( data );
-                    });
+                    $.post(form.attr('action'),
+                        form.serialize(),
+                        function(data) {
+                            displayEditionForm( data );
+                        });
                 return false;
             });
         }
@@ -668,6 +758,7 @@ var lizEdition = function() {
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
                 }
+                $('#edition-waiter').show();
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
@@ -773,6 +864,11 @@ var lizEdition = function() {
         );
         if ( !eConfig || eConfig[1].capabilities.deleteFeature == "False" )
             return false;
+        var aName = eConfig[0];
+        var configLayer = config.layers[aName];
+        var typeName = eConfig[0].split(' ').join('_');
+        if ( 'shortname' in configLayer && configLayer.shortname != '' )
+            typeName = configLayer.shortname;
 
         var deleteConfirm = lizDict['edition.confirm.delete'];
         if ( aMessage )
@@ -798,26 +894,14 @@ var lizEdition = function() {
                 "lizmapeditionfeaturedeleted",
                 {
                     'layerId': aLayerId,
-                    'featureId': aFeatureId
+                    'featureId': aFeatureId,
+                    'featureType': aName,
+                    'updateDrawing': true
                 }
             );
 
-            $.each(lizMap.layers, function(i, l) {
-                var qgisName = lizMap.getNameByCleanName(l.name);
-                var layerConfig = null;
-                if ( qgisName )
-                    layerConfig = config.layers[qgisName];
-                if ( !layerConfig )
-                    layerConfig = config.layers[l.params['LAYERS']];
-                if ( !layerConfig )
-                    layerConfig = config.layers[l.name];
-                if ( !layerConfig )
-                    return true;
-                if (layerConfig.id != aLayerId)
-                    return true;
-                l.redraw(true);
-                return false;
-            });
+            // Redraw layers
+            redrawLayers( aLayerId );
         });
         return false;
     }
@@ -883,15 +967,14 @@ var lizEdition = function() {
     function getFormLayoutNodeHtml(node, parent){
         var formId = $('#edition-form-container form').attr('id');
         if( node.type == 'tab' ){
-
             // Ul item for tab nav
             var navHtml = '<li><a href="#edition-form-tab-';
-            navHtml+= lizMap.cleanName(node.name);
+            navHtml+= lizMap.cleanName(node.name).toLowerCase();
             navHtml+= '" data-toggle="tab">' + node.name + '</a></li>';
 
             // Tab item content
             var tabHtml = '<div class="tab-pane" id="edition-form-tab-';
-            tabHtml+= lizMap.cleanName(node.name);
+            tabHtml+= lizMap.cleanName(node.name).toLowerCase();
             tabHtml+= '" ></div>';
 
             // If parent is root, simply add ul and item to already existing tab container
@@ -902,9 +985,9 @@ var lizEdition = function() {
             // Else we must first be sure tab container exists in parent group
             // Then append containt
             else{
-                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name);
-                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name);
-                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name).toLowerCase();
+                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name).toLowerCase();
+                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
                 if( !$('#' + tabContainerNavId).length ){
                     var tabContainer = '<ul class="nav nav-tabs" id="';
                     tabContainer+= tabContainerNavId;
@@ -925,22 +1008,22 @@ var lizEdition = function() {
             html+= node.name;
             html+= '</legend>';
             html+= '<div class="jforms-table-group" border="0" id="';
-            html+= formId + '_group_' + lizMap.cleanName(node.name);
+            html+= formId + '_group_' + lizMap.cleanName(node.name).toLowerCase();
             html+= '">';
             html+= '</div>';
             html+= '</fieldset>';
-            $('#edition-form-tab-' + lizMap.cleanName(parent.name) ).append(html)
+            $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase() ).append(html)
         }
         else if( node.type == 'field' ){
             html = '';
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_label');
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_label');
             var fieldContainer = field.parents().closest('div.control-group');
-            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
             if( !parentGroup.length )
-                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name));
+                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase());
             fieldContainer.appendTo(parentGroup);
             // Do it also for _choice input (photos and files)
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_choice_label');
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_choice_label');
             if( field.length){
                 var fieldContainer = field.parents().closest('div.control-group');
                 fieldContainer.appendTo(parentGroup);
@@ -1033,7 +1116,6 @@ var lizEdition = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
-                            console.log(layerId+', '+fid);
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
 

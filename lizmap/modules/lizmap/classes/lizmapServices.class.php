@@ -20,8 +20,11 @@ class lizmapServices{
     // services properties
     private $properties = array(
       'appName',
+      'qgisServerVersion',
       'wmsServerURL',
       'wmsPublicUrlList',
+      'wmsMaxWidth',
+      'wmsMaxHeight',
       'cacheStorageType',
       'cacheExpiration',
       'defaultRepository',
@@ -42,8 +45,11 @@ class lizmapServices{
 
     // services properties
     private $sensitiveProperties = array(
+      'qgisServerVersion',
       'wmsServerURL',
       'wmsPublicUrlList',
+      'wmsMaxWidth',
+      'wmsMaxHeight',
       'cacheStorageType',
       'cacheExpiration',
       'rootRepositories',
@@ -62,10 +68,16 @@ class lizmapServices{
 
     // Wms map server
     public $appName = 'Lizmap';
+    // QGIS Server version
+    public $qgisServerVersion = '2.14';
     // Wms map server
     public $wmsServerURL = '';
     // Public Wms url list
     public $wmsPublicUrlList = '';
+    // Wms max width
+    public $wmsMaxWidth = 3000;
+    // Wms max width
+    public $wmsMaxHeight = 3000;
     // map cache server
     public $cacheStorageType = '';
     // default repository

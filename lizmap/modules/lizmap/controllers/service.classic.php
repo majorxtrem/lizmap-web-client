@@ -659,6 +659,7 @@ class serviceCtrl extends jController {
   * @return Replaced text.
   */
   function replaceMediaPathByMediaUrl($matches){
+    $req = jApp::coord()->request;
     $return = '';
     $return.= '"';
     $return.= jUrl::getFull(
@@ -669,7 +670,7 @@ class serviceCtrl extends jController {
         'path'=>$matches[2]
       ),
       0,
-      $_SERVER['SERVER_NAME']
+      $req->getDomainName().$req->getPort()
     );
     $return.= '"';
     return $return;
@@ -766,6 +767,10 @@ class serviceCtrl extends jController {
       }
 
       // Loop through the features
+      $popupMaxFeatures = 10;
+      if( property_exists($configLayer, 'popupMaxFeatures') && is_numeric($configLayer->popupMaxFeatures) )
+          $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
+      $layerFeaturesCounter = 0;
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
         // Optionnally filter by feature id
@@ -774,6 +779,11 @@ class serviceCtrl extends jController {
             $filterFid[$configLayer->name] != $id) {
           continue;
         }
+
+        if($layerFeaturesCounter == $popupMaxFeatures){
+          break;
+        }
+        $layerFeaturesCounter++;
 
         // Hidden input containing layer id and feature id
         $hiddenFeatureId = '<input type="hidden" value="' . $layerId . '.' .$id.'" class="lizmap-popup-layer-feature-id"/>
@@ -932,7 +942,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = $mime;
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getPrint.'.$this->param('format');
+    $rep->outputFileName  =  $this->project->getKey() . '_' . preg_replace("#[\W]+#", '_', $this->params['template']) . '.' . $this->params['format'];
 
    // Log
    $logContent ='
@@ -1057,37 +1067,18 @@ class serviceCtrl extends jController {
   */
   function GetFeature(){
 
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
+    $wfsRequest = new lizmapWFSRequest( $this->project, $this->params );
+    $result = $wfsRequest->process();
 
-    // add outputformat if not provided
-    $output = $this->iParam('outputformat');
-    if(!$output)
-      $this->params['outputformat'] = 'GML2';
-
-    // Construction of the request url : base url + parameters
-    $url = $this->services->wmsServerURL.'?';
-    $bparams = http_build_query($this->params);
-    $querystring = $url . $bparams;
-
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      'php',
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-
-    // Return response
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
-        $rep->mimeType = 'text/json; charset=utf-8';
+    $rep->mimeType = $result->mime;
+
+    if(property_exists($result, 'file') and $result->file and is_file($result->data) ){
+        $rep->fileName = $result->data;
+    }else{
+        $rep->content = $result->data; // causes memory_limit for big content
     }
-    $rep->content = $data;
-    $rep->doDownload  =  false;
+    $rep->doDownload = false;
     $rep->outputFileName  =  'qgis_server_wfs';
 
     // Export
@@ -1095,8 +1086,13 @@ class serviceCtrl extends jController {
     if( $dl ){
       // force download
       $rep->doDownload = true;
-      // debug 1st line blank from QGIS Server
-      $rep->content = preg_replace('/^[\n\r]/', '', $data);
+
+      if(property_exists($result, 'file') and $result->file and is_file($result->data) ){
+          $rep->fileName = $result->data;
+      }else{
+        // debug 1st line blank from QGIS Server
+        $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
+      }
       // Change file name
       $zipped_files = array('shp','mif','tab');
       if ( in_array( strtolower($this->params['outputformat']), $zipped_files ) )

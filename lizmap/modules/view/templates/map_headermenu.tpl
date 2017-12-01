@@ -1,7 +1,6 @@
 <div id="auth" class="navbar-inner">
   <div class="pull-right">
 
-    {if $externalSearch != ''}
     <form id="nominatim-search" class="navbar-search dropdown">
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
@@ -9,18 +8,7 @@
           <span>{@view~map.search.nominatim.button@}</span>
         </button>
       </span>
-      <div class="dropdown-menu pull-right">
-        <div class="dropdown-caret">
-          <div class="caret-outer"></div>
-          <div class="caret-inner"></div>
-        </div>
-        <div class="dropdown-inner">
-          <span class="close">×</span>
-          <ul class="items"></ul>
-        </div>
-      </div>
     </form>
-    {/if}
 
     <ul class="nav">
       {if $isConnected}
@@ -28,7 +16,7 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">
           <span class="icon"></span>
           <span class="text">
-            <b id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</b>
+            <span id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</span>
             <span style="display:none" id="info-user-firstname">{$user->firstname}</span>
             <span style="display:none" id="info-user-lastname">{$user->lastname}</span>
           </span>
@@ -45,7 +33,7 @@
       <li class="login">
         <a href="{jurl 'jauth~login:form', array('auth_url_return'=>$auth_url_return)}">
           <span class="icon"></span>
-          <span class="text"><b>{@view~default.header.connect@}</b></span>
+          <span class="text">{@view~default.header.connect@}</span>
         </a>
       </li>
         {if isset($allowUserAccountRequests)}

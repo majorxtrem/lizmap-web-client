@@ -99,25 +99,19 @@ class defaultCtrl extends jController {
 
     $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository, 'auth_url_return'=>$auth_url_return));
 
-    $rep->addJSCode("
-      $(window).load(function() {
-        $('.liz-project-img').parent().mouseenter(function(){
-          var self = $(this);
-          self.find('.liz-project-desc').slideDown();
-          self.css('cursor','pointer');
-        }).mouseleave(function(){
-          var self = $(this);
-          self.find('.liz-project-desc').hide();
-        }).click(function(){
-          var self = $(this);
-          window.location = self.parent().find('a.liz-project-view').attr('href');
-          return false;
-        });
-      });
-      ");
-    // Js hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
+    // JS code
+    // Click on thumbnails
+    // and hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
     $bp = jApp::config()->urlengine['basePath'];
     $rep->addJSLink($bp.'js/view.js');
+
+    // Override default theme with color set in admin panel
+    if($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/') . 'theme.css') ){
+      $css = '<style type="text/css">' . $cssContent . '</style>
+      ';
+      $rep->addHeadContent($css);
+    }
+
 
     return $rep;
   }

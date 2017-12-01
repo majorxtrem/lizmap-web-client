@@ -5,6 +5,12 @@
   <label locale="admin~admin.form.admin_services.appName.label"/>
 </input>
 
+<menulist ref="qgisServerVersion" required="true">
+  <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
+  <item value="2.14" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
+  <item value="2.18" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
+</menulist>
+
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
   <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
@@ -13,10 +19,18 @@
   <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
 </input>
 
+<input ref="wmsMaxWidth" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
+  <label locale="admin~admin.form.admin_services.wmsMaxWidth.label"/>
+</input>
+
+<input ref="wmsMaxHeight" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
+  <label locale="admin~admin.form.admin_services.wmsMaxHeight.label"/>
+</input>
+
 <menulist ref="onlyMaps" required="true">
   <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
-  <item value="0" selected="true">off</item>
-  <item value="1">on</item>
+  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
 </menulist>
 
 <menulist ref="defaultRepository">
@@ -85,8 +99,8 @@
 
 <menulist ref="allowUserAccountRequests">
   <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
-  <item value="off" selected="true">off</item>
-  <item value="on">on</item>
+  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
 </menulist>
 
 <input ref="adminContactEmail" type="email">

@@ -14,7 +14,7 @@ pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
 ; the locales available in the application
-availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE,pl_PL,ru_RU,fi_FI,gl_ES,sv_SE"
+availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE,pl_PL,ru_RU,fi_FI,gl_ES,sv_SE,nl_NL,ro_RO"
 ; the locale to fallback when the asked string doesn't exist in the current locale
 fallbackLocale = en_US
 
@@ -41,7 +41,7 @@ minifyJS=0
 ; liste des fichiers CSS qui ne doivent pas être compressé
 minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css"
 ; liste des fichiers JS qui ne doivent pas être compressé
-minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery-1.11.1.min.js,js/jquery-ui-1.11.2.custom.min.js"
+minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery-1.12.4.min.js,js/jquery-ui-1.11.2.custom.min.js"
 ; chemin du point d'entrée de Minify, relatif au basePath
 minifyEntryPoint=minify.php
 
@@ -104,7 +104,6 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-index="jauth~*@classic"
 admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
 
 
@@ -223,7 +222,7 @@ datepicker=default
 default="jelix/js/jforms/datepickers/default/init.js"
 
 [modules]
-jelix.access=2
+jelix.access=1
 
 jacl.access=0
 jacldb.access=0
@@ -232,23 +231,20 @@ jsoap.access=0
 junittests.access=0
 jpref_admin.access=0
 
-
 jacl2.access=1
-jacl2db.access=2
+jacl2db.access=1
 jacl2db.installparam=defaultuser
-jacl2db_admin.access=2
-jauth.access=2
-jauthdb.access=2
+
+jauth.access=1
+jauthdb.access=1
 jauthdb.installparam=defaultuser
-jauthdb_admin.access=2
 
-master_admin.access=2
-
-lizmap.access=2
-view.access=2
-admin.access=2
+lizmap.access=1
+view.access=1
+admin.access=1
 proj4php.access=1
-
+dynamicLayers.access=1
+dataviz.access=1
 
 [mailLogger]
 email="root@localhost"

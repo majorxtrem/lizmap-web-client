@@ -13,23 +13,45 @@ var bottomDockFunction = function() {
         // Initialize bottom dock position
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
 
-        // Div content interactions
-        $('#bottom-dock').hover(
-          function(){
-            showBottomDockContent();
-            $(this).removeClass('half-transparent');
-            return false;
-          }
-          ,
-          function(){
-            if ( !bottomDockGlued &&!lizMap.checkMobile())
-              hideBottomDockContent();
+        // Hide/show bottom dock on hover out/in (with small delay)
+        $(function() {
+            var lizBottomDockTimer;
+            var lizBottomDockTimeHoverOut = 700;
+            var lizBottomDockTimeHoverIn = 50;
+            if( 'bottomDockTimeHoverOut' in lizMap.config.options )
+              lizBottomDockTimeHoverOut = lizMap.config.options.bottomDockTimeHoverOut;
+            if( 'bottomDockTimeHoverIn' in lizMap.config.options )
+              lizBottomDockTimeHoverIn = lizMap.config.options.bottomDockTimeHoverIn;
 
-            $(this).addClass('half-transparent');
-            return false;
-          }
-        );
-
+            $('#bottom-dock').hover(
+              // hover in
+              function() {
+                if(lizBottomDockTimer) {
+                    clearTimeout(lizBottomDockTimer);
+                    lizBottomDockTimer = null;
+                }
+                lizBottomDockTimer = setTimeout(function() {
+                  showBottomDockContent();
+                  $(this).removeClass('half-transparent');
+                  return false;
+                }, lizBottomDockTimeHoverIn);
+              },
+              // mouse out
+              function(){
+                if(lizBottomDockTimer) {
+                    clearTimeout(lizBottomDockTimer);
+                    lizBottomDockTimer = null;
+                }
+                lizBottomDockTimer = setTimeout(function() {
+                  if ( !bottomDockGlued &&!lizMap.checkMobile()){
+                    hideBottomDockContent();
+                  }
+                  $(this).addClass('half-transparent');
+                  return false;
+                }, lizBottomDockTimeHoverOut);
+              }
+            );
+        });
 
         // Bind bottom dock buttons actions
 
@@ -57,6 +79,8 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.glue.activate.title']);
             hideBottomDockContent();
+
+            lizMap.events.triggerEvent('bottomdockunpinned', null );
           }
           else {
             bottomDockGlued = true;
@@ -66,6 +90,7 @@ var bottomDockFunction = function() {
               lizDict['bottomdock.toolbar.btn.glue.deactivate.title']
             )
             .html(lizDict['bottomdock.toolbar.btn.glue.glued.title']);
+            lizMap.events.triggerEvent('bottomdockpinned', null );
           }
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
@@ -116,6 +141,7 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.size.maximize.title']);
             $('#bottom-dock').removeClass('fullsize');
+            lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'half'} );
           }
           else {
             bottomDockFullsize = true;
@@ -126,6 +152,7 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.size.minimize.title']);
             $('#bottom-dock').addClass('fullsize');
+            lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'full'} );
           }
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;

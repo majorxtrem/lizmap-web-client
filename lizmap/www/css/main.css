@@ -7,6 +7,12 @@ body {
   background : #EFEFEF;
 }
 
+h1, h2, h3, h4, h5
+{
+  font-weight: normal !important;
+}
+
+
 /* for ie 8*/
 a {
   color: #2B2B2B\9;
@@ -35,7 +41,7 @@ a:hover {
 }
 #logo {
   float : left;
-  height : 60px;
+  height : 65px;
   min-width: 60px;
   margin-top : 5px;
   margin-bottom : 5px;
@@ -43,6 +49,7 @@ a:hover {
   margin-right : 20px;
   background : url('img/logo.png') no-repeat;
   background-size: contain;
+  background-position:center;
 }
 #logo h1 {
   margin-left : 85px;

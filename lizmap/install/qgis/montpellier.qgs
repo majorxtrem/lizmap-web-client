@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.14.7-Essen">
+<qgis projectname="Montpellier - Transports" version="2.14.12-Essen">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
@@ -62,7 +62,7 @@
     <layer-tree-layer expanded="1" checked="Qt::Checked" id="SousQuartiers20160121124316563" name="SousQuartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
+    <layer-tree-layer expanded="0" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Overview">
@@ -138,9 +138,14 @@
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus_stops20121106170806413"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus20121102133611751"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="SousQuartiers20160121124316563"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="ArbRemarq_point20170509160239869"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tenants_and_owners20170509164904788"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_point20130118171631518"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramway20150328114206278"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="publicbuildings20150420100958543"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="Monuments_Historiques20170509160204814"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="average_tenants_owners20170509164213410"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446"/>
     </layer_coordinate_transform_info>
   </mapcanvas>
@@ -247,9 +252,9 @@
         <legendlayerfile isInOverview="0" layerid="SousQuartiers20160121124316563" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="Quartiers" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="Quartiers" showFeatureCount="0">
       <filegroup open="false" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendgroup open="true" checked="Qt::Unchecked" name="Overview">
@@ -359,7 +364,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerLabel>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="35.168" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="35.168" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./media/logo_osm.png" northOffset="0" pictureHeight="35.3838" mapId="-1" anchorPoint="4">
         <ComposerItem pagey="10.3524" page="1" id="" lastValidViewScaleFactor="1.95973" positionMode="0" positionLock="false" x="245.868" y="10.3524" visibility="1" zValue="3" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="41.4127" outlineWidth="0.3" excludeFromExports="0" uuid="{6b35eaa7-9f33-4cd3-a59c-04772b964ab8}" height="35.3838" itemRotation="0" frame="false" pagex="245.868">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -367,7 +372,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerPicture>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="38.0665" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="38.3" mapId="-1" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="38.0665" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" northOffset="0" pictureHeight="38.3" mapId="-1" anchorPoint="4">
         <ComposerItem pagey="5.91563" page="1" id="" lastValidViewScaleFactor="2.7047" positionMode="0" positionLock="false" x="5.56126" y="5.91563" visibility="1" zValue="2" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="38.0665" outlineWidth="0.3" excludeFromExports="0" uuid="{15a8899f-b857-4319-86bc-81c22ef664b2}" height="39.6255" itemRotation="0" frame="false" pagex="5.56126">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -454,7 +459,7 @@
     </Composition>
   </Composer>
   <Composer title="Landscape A4" visible="0">
-    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
+    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="2" snapGridResolution="10" resizeToContentsMarginBottom="0">
       <symbol alpha="1" clip_to_extent="1" type="fill" name="">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -470,7 +475,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="0.000105679" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
+      <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="11.7643" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
         <scaleBarFont description="Ubuntu,12,-1,5,50,0,0,0,0,0" style=""/>
         <fillColor alpha="255" red="0" blue="0" green="0"/>
         <fillColor2 alpha="255" red="255" blue="255" green="255"/>
@@ -482,7 +487,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerScaleBar>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" pictureHeight="14.3234" mapId="0" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.2361" mapId="0" anchorPoint="4">
         <ComposerItem pagey="191.227" page="1" id="" lastValidViewScaleFactor="3.66844" positionMode="0" positionLock="false" x="216.926" y="191.227" visibility="1" zValue="6" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="14.2361" outlineWidth="0.3" excludeFromExports="0" uuid="{5fc27115-d5a9-44e3-aebe-e6199c6ac0fa}" height="16.2837" itemRotation="0" frame="false" pagex="216.926">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -579,7 +584,7 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -639,7 +644,7 @@
             </customproperties>
           </layer-tree-layer>
         </layer-tree-group>
-        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="164" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.3" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -714,12 +719,52 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
+      <ComposerAttributeTableV2 source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0">
+        <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <displayColumns>
+          <column width="0" vAlignment="128" attribute="work_id" sortByRank="0" hAlignment="1" heading="Id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_date" sortByRank="1" hAlignment="1" heading="Date" sortOrder="1">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_title" sortByRank="0" hAlignment="1" heading="Title" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_description" sortByRank="0" hAlignment="1" heading="Description" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="tram_stop_id" sortByRank="0" hAlignment="1" heading="Stop id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+        </displayColumns>
+        <cellStyles>
+          <oddColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <oddRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <headerRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+        </cellStyles>
+        <ComposerFrame sectionWidth="198.455" sectionHeight="197.439" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
+          <ComposerItem pagey="4.18073" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.22844" y="224.181" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="198.455" outlineWidth="0.3" excludeFromExports="0" uuid="{3dac7fb6-a4be-4daf-89b1-c1617d1d20c3}" height="197.439" itemRotation="0" frame="false" pagex="2.22844">
+            <FrameColor alpha="255" red="0" blue="0" green="0"/>
+            <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            <customproperties/>
+          </ComposerItem>
+        </ComposerFrame>
+        <customproperties/>
+      </ComposerAttributeTableV2>
       <customproperties/>
     </Composition>
   </Composer>
@@ -1295,6 +1340,14 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="LIBQUART" index="2" name=""/>
+        <alias field="QUARTIER" index="0" name=""/>
+        <alias field="QUARTMNO" index="1" name=""/>
+        <alias field="SQUARTMNO" index="3" name=""/>
+        <alias field="photo" index="4" name=""/>
+        <alias field="url" index="5" name=""/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -1710,6 +1763,9 @@ def my_form_open(dialog, layer, feature):
       <annotationform>.</annotationform>
       <aliases>
         <alias field="LIBQUART" index="2" name="Name"/>
+        <alias field="QUARTIER" index="0" name=""/>
+        <alias field="QUARTMNO" index="1" name=""/>
+        <alias field="SQUARTMNO" index="3" name=""/>
         <alias field="photo" index="4" name="Illustration"/>
         <alias field="url" index="5" name="Website"/>
       </aliases>
@@ -2635,6 +2691,8 @@ def my_form_open(dialog, layer, feature):
         <alias field="name" index="0" name="Name"/>
         <alias field="operator" index="4" name="Operator"/>
         <alias field="ref" index="2" name="Ref"/>
+        <alias field="role" index="6" name=""/>
+        <alias field="route" index="3" name=""/>
         <alias field="type" index="5" name="Type"/>
       </aliases>
       <excludeAttributesWMS>
@@ -2931,9 +2989,11 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>donnes_sociodemo_sous_quartiers20160121144525075</id>
       <datasource>./data/vector/donnes_sociodemo_sous_quartiers.csv</datasource>
+      <title>Repartition of owners and tenants</title>
+      <abstract>This plot shows the repartition of owners and tenants per subdistrict in Montpellier, France.</abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -2950,7 +3010,10 @@ def my_form_open(dialog, layer, feature):
           <geographicflag>true</geographicflag>
         </spatialrefsys>
       </srs>
-      <customproperties/>
+      <customproperties>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
+      </customproperties>
       <provider encoding="System">ogr</provider>
       <previewExpression>COALESCE("squartmno", '&lt;NULL>')||', '||COALESCE("population_2009", '&lt;NULL>')||', '||COALESCE("population_percentage", '&lt;NULL>')||', '||COALESCE("population_density", '&lt;NULL>')||', '||COALESCE("average_income", '&lt;NULL>')||', '||COALESCE("prop_percentage", '&lt;NULL>')||', '||COALESCE("loc_percentage", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
@@ -2980,6 +3043,14 @@ def my_form_open(dialog, layer, feature):
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="average_income" index="3" name="Average income"/>
+        <alias field="loc_percentage" index="5" name="% Tenants"/>
+        <alias field="population_2009" index="1" name="Population"/>
+        <alias field="population_percentage" index="2" name="Population %"/>
+        <alias field="prop_percentage" index="4" name="% Owners"/>
+        <alias field="squartmno" index="0" name="Subdistrict"/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -2987,7 +3058,22 @@ def my_form_open(dialog, layer, feature):
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath>.</editforminitfilepath>
-      <editforminitcode><![CDATA[]]></editforminitcode>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
+
+Utilisez cette fonction pour ajouter plus de fonctionnalités à vos formulaires.
+
+Entrez le nom de la fonction dans le champ
+"Fonction d'initialisation Python"
+Voici un exemple à suivre:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <widgets/>
@@ -3023,7 +3109,7 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "description", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -3171,6 +3257,12 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="description" index="2" name=""/>
+        <alias field="difficulty" index="3" name=""/>
+        <alias field="label" index="1" name=""/>
+        <alias field="pkuid" index="0" name=""/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -3631,6 +3723,15 @@ def my_form_open(dialog, layer, feature):
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="date" index="4" name=""/>
+        <alias field="description" index="2" name=""/>
+        <alias field="name" index="1" name=""/>
+        <alias field="photo" index="6" name=""/>
+        <alias field="pkuid" index="0" name=""/>
+        <alias field="type" index="5" name=""/>
+        <alias field="user" index="3" name=""/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -3825,6 +3926,13 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="author" index="3" name=""/>
+        <alias field="checked" index="4" name=""/>
+        <alias field="description" index="2" name=""/>
+        <alias field="label" index="1" name=""/>
+        <alias field="pkuid" index="0" name=""/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -4000,6 +4108,7 @@ def my_form_open(dialog, layer, feature):
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
+        <alias field="OGC_FID" index="0" name=""/>
         <alias field="sequence" index="3" name="Sequence"/>
         <alias field="stop_id" index="2" name="Stop id"/>
         <alias field="tram_id" index="1" name="Tram id"/>
@@ -4360,8 +4469,10 @@ def my_form_open(dialog, layer, feature):
       <annotationform>.</annotationform>
       <aliases>
         <alias field="b_id" index="1" name="Building Id"/>
+        <alias field="publicbuildings_b_name" index="4" name="Name"/>
         <alias field="r_id" index="0" name="Id"/>
         <alias field="stop_id" index="2" name="Stop Id"/>
+        <alias field="tramstop_name" index="3" name="Stop name"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -4748,6 +4859,7 @@ def my_form_open(dialog, layer, feature):
         <alias field="name" index="2" name="Stop name"/>
         <alias field="osm_id" index="1" name="Id OSM"/>
         <alias field="unique_name" index="4" name="Unique name"/>
+        <alias field="wkt" index="3" name=""/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>OGC_FID</attribute>
@@ -5488,10 +5600,12 @@ def my_form_open(dialog, layer, feature):
         <alias field="OGC_FID" index="0" name="Id"/>
         <alias field="colour" index="6" name="Colour"/>
         <alias field="from" index="4" name="From"/>
+        <alias field="html" index="7" name=""/>
         <alias field="name" index="2" name="Line"/>
         <alias field="osm_id" index="1" name="Id OSM"/>
         <alias field="ref" index="3" name="Ref"/>
         <alias field="to" index="5" name="To"/>
+        <alias field="wkt" index="8" name=""/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>osm_id</attribute>
@@ -5579,6 +5693,10 @@ def my_form_open(dialog, layer, feature):
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
+      <aliases>
+        <alias field="line_name" index="1" name=""/>
+        <alias field="ref_id" index="0" name=""/>
+      </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions/>
@@ -5598,6 +5716,10 @@ def my_form_open(dialog, layer, feature):
   </projectlayers>
   <properties>
     <WMSUrl type="QString"></WMSUrl>
+    <Mask>
+      <layer_id type="QString"></layer_id>
+      <parameters type="QString">KGxwMApJMDAKYUkxCmFJNQphSTAxCmFGMS4wCmFJMDAKYU5hTmEobHAxCmFOYUkyCmFJMAphTmFOYS4=</parameters>
+    </Mask>
     <SpatialRefSys>
       <ProjectCRSProj4String type="QString">+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</ProjectCRSProj4String>
       <ProjectCrs type="QString">EPSG:3857</ProjectCrs>
@@ -5629,7 +5751,7 @@ def my_form_open(dialog, layer, feature):
     <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>
-      <donnes_sociodemo_sous_quartiers20160121144525075 type="int">1</donnes_sociodemo_sous_quartiers20160121144525075>
+      <donnes_sociodemo_sous_quartiers20160121144525075 type="int">8</donnes_sociodemo_sous_quartiers20160121144525075>
       <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
       <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
       <edition_point20130118171631518 type="int">8</edition_point20130118171631518>
@@ -5640,12 +5762,16 @@ def my_form_open(dialog, layer, feature):
       <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
       <tramway20150328114206278 type="int">8</tramway20150328114206278>
+      <VilleMTP_MTP_Quartiers_2011_432620130116112351546 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112351546>
       <tramway_ref20150612171109044 type="int">1</tramway_ref20150612171109044>
       <publicbuildings_tramstop20150420095614071 type="int">8</publicbuildings_tramstop20150420095614071>
+      <ArbRemarq_point20170509160239869 type="int">8</ArbRemarq_point20170509160239869>
       <tram_stops20150311115247810 type="int">8</tram_stops20150311115247810>
       <VilleMTP_MTP_SousQuartiers_201120130929113137811 type="int">8</VilleMTP_MTP_SousQuartiers_201120130929113137811>
       <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
+      <tenants_and_owners20170509164904788 type="int">8</tenants_and_owners20170509164904788>
       <route_tram20150311113518037 type="int">8</route_tram20150311113518037>
+      <average_tenants_owners20170509164213410 type="int">8</average_tenants_owners20170509164213410>
       <jointure_tram_stop20150311122053595 type="int">8</jointure_tram_stop20150311122053595>
       <SousQuartiers20160121124316563 type="int">8</SousQuartiers20160121124316563>
       <route_tram20150311113517859 type="int">8</route_tram20150311113517859>
@@ -5796,7 +5922,10 @@ def my_form_open(dialog, layer, feature):
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WFSLayers type="QStringList">
       <value>SousQuartiers20160121124316563</value>
+      <value>VilleMTP_MTP_Quartiers_2011_432620130116112351546</value>
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
+      <value>bus20121102133611751</value>
+      <value>bus_stops20121106170806413</value>
       <value>donnes_sociodemo_sous_quartiers20160121144525075</value>
       <value>edition_line20130409161630329</value>
       <value>edition_point20130118171631518</value>
@@ -5804,6 +5933,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <value>jointure_tram_stop20150328114216806</value>
       <value>publicbuildings20150420100958543</value>
       <value>publicbuildings_tramstop20150420095614071</value>
+      <value>tenants_and_owners20170509164904788</value>
       <value>tram_stop_work20150416102656130</value>
       <value>tramstop20150328114203878</value>
       <value>tramway20150328114206278</value>

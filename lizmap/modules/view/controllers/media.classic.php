@@ -163,7 +163,7 @@ class mediaCtrl extends jController {
       $rep->content = $content;
     }
 
-    $rep->setExpires('+60 seconds');
+    $rep->setExpires('+1 days');
 
     return $rep;
   }
@@ -216,18 +216,30 @@ class mediaCtrl extends jController {
     // default illustration
     $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
     $rep->fileName = $themePath.'css/img/250x250_mappemonde.png';
+    $rep->outputFileName = 'lizmap_mappemonde.png';
+    $rep->mimeType = 'image/png';
+
     // get project illustration if exists
     if($project){
         $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
         foreach($imageTypes as $type){
-            if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
-                $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
-                $rep->mimeType = "image/$type";
-                $rep->setExpires('+60 seconds');
-                return $rep;
-            }
+            if ( !file_exists($lrep->getPath().$project.'.qgs.'.$type) )
+                continue;
+
+            $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
+            $rep->outputFileName = $repository.'_'.$project.'.'.$type;
+            $rep->mimeType = 'image/'.$type;
         }
     }
+
+    // Get the mime type
+    $mime = jFile::getMimeType($rep->fileName);
+    if( $mime == 'text/plain' || $mime == '') {
+        $mime = jFile::getMimeTypeFromFilename($rep->fileName);
+    }
+    $rep->mimeType = $mime;
+
+    $rep->setExpires('+1 days');
     return $rep;
   }
 
@@ -330,7 +342,7 @@ class mediaCtrl extends jController {
     $content = str_replace('"', '', $content);
     $rep->content = $content;
 
-    $rep->setExpires('+60 seconds');
+    $rep->setExpires('+1 days');
 
     return $rep;
   }
@@ -347,6 +359,44 @@ class mediaCtrl extends jController {
     return $rep;
   }
 
+
+  /**
+  * Get logo or background image defined in lizmap admin theme configuration
+  * @param $key : type of image. Can be 'headerLogo' or 'headerBackgroundImage'
+  * @return Admin configured theme logo
+  */
+  function themeImage() {
+
+    $key = $this->param('key', 'headerLogo');
+    if($key != 'headerLogo' and $key != 'headerBackgroundImage')
+        $key = 'headerLogo';
+
+    $rep = $this->getResponse('binary');
+    $rep->doDownload = false;
+
+    $theme = lizmap::getTheme();
+    $imgPath = jApp::varPath('lizmap-theme-config/') . $theme->$key;
+
+    if( is_file($imgPath) ){
+        $mime = jFile::getMimeType($imgPath);
+        if( $mime == 'text/plain' || $mime == '') {
+            $mime = jFile::getMimeTypeFromFilename($imgPath);
+        }
+        $rep->mimeType = $mime;
+        $rep->fileName = $imgPath;
+    }else{
+        if( $key == 'headerLogo' ){
+            $rep->fileName = realpath(jApp::wwwPath('/themes/default/css/img/logo.png'));
+            $rep->mimeType = 'image/png';
+            $rep->outputFileName = 'logo.png';
+        }else{
+            return $this->error404('The image file  does not exist !');
+        }
+    }
+    $rep->setExpires('+1 days');
+
+    return $rep;
+  }
 
 
 }

@@ -1,4 +1,3 @@
-
 #title h1 {
   color : #E9E9E9;
 }
@@ -491,10 +490,6 @@ Timemanager
   color : white !important;
   border-bottom: 1px dashed white;
 }
-.lizmapPopup.olPopup .lizmapPopupContent a,
-#map-content .lizmapPopupContent a{
-  color:black;
-}
 /*
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
@@ -530,6 +525,15 @@ Timemanager
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
+}
+#loading p {
+  display: none;
+}
+#loading {
+  background-image: url(img/loading.gif);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
 }
 
 

@@ -375,9 +375,9 @@ class lizmapProxy {
         $cacheExpiration = (int)$ser->cacheExpiration;
 
         // Cache root directory
+        $cacheRootDirectory = $ser->cacheRootDirectory;
         if( $cacheStorageType != 'redis' ){
-            $cacheRootDirectory = $ser->cacheRootDirectory;
-            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+            if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
                 $cacheRootDirectory = sys_get_temp_dir();
             }
         }
@@ -460,9 +460,16 @@ class lizmapProxy {
             $cacheRedisPort = trim($ser->cacheRedisPort);
         }
 
+        if (extension_loaded('redis')) {
+            $driver = 'redis_ext';
+        }
+        else {
+            $driver = 'redis_php';
+        }
+
         // Virtual cache profile parameter
         $cacheParams = array(
-            "driver"=>"redis",
+            "driver"=>$driver,
             "host"=>$cacheRedisHost,
             "port"=>$cacheRedisPort,
             "ttl"=>$cacheExpiration,
@@ -531,7 +538,7 @@ class lizmapProxy {
         if ($cacheStorageType != 'redis') {
 
             $cacheRootDirectory = $ser->cacheRootDirectory;
-            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+            if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
                 $cacheRootDirectory = sys_get_temp_dir();
             }
 
